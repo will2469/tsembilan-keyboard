@@ -3,40 +3,60 @@ package id.local.tsembilankeyboard.core.ime
 import android.os.Handler
 import android.os.Looper
 
+enum class InputMode {
+    LOWERCASE, // abc
+    CAPITALIZE, // Abc
+    UPPERCASE  // ABC
+}
+
 class MultiTapEngine(
     private val commitCallback: (String) -> Unit,
-    private val composingCallback: (String) -> Unit
+    private val composingCallback: (String) -> Unit,
+    private val previewCallback: (String) -> Unit,
+    private val hidePreviewCallback: () -> Unit
 ) {
-    private val timeoutMs = 800L
+    companion object {
+        const val MULTI_TAP_TIMEOUT_MS = 1000L
+    }
+
     private val handler = Handler(Looper.getMainLooper())
     
     private var currentKey: Int = -1
     private var currentIndex: Int = 0
     private var isComposing: Boolean = false
     
-    private val keyMap = mapOf(
-        1 to listOf(".", ",", "!", "?", "1"),
-        2 to listOf("a", "b", "c", "2"),
-        3 to listOf("d", "e", "f", "3"),
-        4 to listOf("g", "h", "i", "4"),
-        5 to listOf("j", "k", "l", "5"),
-        6 to listOf("m", "n", "o", "6"),
-        7 to listOf("p", "q", "r", "s", "7"),
-        8 to listOf("t", "u", "v", "8"),
-        9 to listOf("w", "x", "y", "z", "9"),
-        0 to listOf(" ", "0")
-    )
+    var currentMode: InputMode = InputMode.LOWERCASE
+        private set
+        
+    fun setMode(mode: InputMode) {
+        currentMode = mode
+    }
+
+    fun cycleMode(): InputMode {
+        currentMode = when (currentMode) {
+            InputMode.LOWERCASE -> InputMode.CAPITALIZE
+            InputMode.CAPITALIZE -> InputMode.UPPERCASE
+            InputMode.UPPERCASE -> InputMode.LOWERCASE
+        }
+        return currentMode
+    }
 
     private val timeoutRunnable = Runnable {
         commitCurrent()
     }
 
     fun onKeyPress(keyCode: Int) {
-        if (keyCode == currentKey) {
+        val chars = KeyMapper.getCharacters(keyCode)
+        if (chars == null) {
+            // Unmapped key (like 0, handled separately, but just in case)
+            commitCurrent()
+            return
+        }
+
+        if (keyCode == currentKey && isComposing) {
             // cycle
-            val chars = keyMap[keyCode] ?: return
             currentIndex = (currentIndex + 1) % chars.size
-            updateComposing()
+            updateComposingAndPreview()
             resetTimer()
         } else {
             // commit previous if composing
@@ -47,27 +67,45 @@ class MultiTapEngine(
             currentKey = keyCode
             currentIndex = 0
             isComposing = true
-            updateComposing()
+            updateComposingAndPreview()
             resetTimer()
         }
     }
 
-    private fun updateComposing() {
-        val chars = keyMap[currentKey] ?: return
+    private fun getActiveChar(): String {
+        val chars = KeyMapper.getCharacters(currentKey) ?: return ""
         val char = chars[currentIndex]
-        composingCallback(char)
+        return when (currentMode) {
+            InputMode.LOWERCASE -> char.lowercase()
+            InputMode.CAPITALIZE, InputMode.UPPERCASE -> char.uppercase()
+        }
+    }
+
+    private fun updateComposingAndPreview() {
+        if (!isComposing) return
+        val activeChar = getActiveChar()
+        if (activeChar.isNotEmpty()) {
+            composingCallback(activeChar)
+            previewCallback(activeChar)
+        }
     }
 
     fun commitCurrent() {
         handler.removeCallbacks(timeoutRunnable)
         if (isComposing) {
-            val chars = keyMap[currentKey]
-            if (chars != null) {
-                commitCallback(chars[currentIndex])
+            val activeChar = getActiveChar()
+            if (activeChar.isNotEmpty()) {
+                commitCallback(activeChar)
             }
             isComposing = false
             currentKey = -1
             currentIndex = 0
+            hidePreviewCallback()
+            
+            // Auto switch Abc to abc after commit
+            if (currentMode == InputMode.CAPITALIZE) {
+                currentMode = InputMode.LOWERCASE
+            }
         }
     }
     
@@ -76,11 +114,16 @@ class MultiTapEngine(
         isComposing = false
         currentKey = -1
         currentIndex = 0
+        hidePreviewCallback()
+    }
+
+    fun cleanup() {
+        handler.removeCallbacksAndMessages(null)
     }
 
     private fun resetTimer() {
         handler.removeCallbacks(timeoutRunnable)
-        handler.postDelayed(timeoutRunnable, timeoutMs)
+        handler.postDelayed(timeoutRunnable, MULTI_TAP_TIMEOUT_MS)
     }
     
     fun isComposing(): Boolean = isComposing
