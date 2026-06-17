@@ -60,6 +60,14 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <style name="KbKeyTextSpecialStyle">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/key_special_text</item>
+        <item name="android:textSize">@dimen/kb_text_action</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="KbKeyTextSendStyle">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>

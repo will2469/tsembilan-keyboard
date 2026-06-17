@@ -6,7 +6,7 @@
         android:id="@+id/key_abc"
         style="@style/KbKeyContainerStyle">
         <TextView
-            style="@style/KbKeyTextActionStyle"
+            style="@style/KbKeyTextSpecialStyle"
             android:text="abc" />
     </LinearLayout>
 
@@ -14,7 +14,7 @@
         android:id="@+id/key_left"
         style="@style/KbKeyContainerStyle">
         <TextView
-            style="@style/KbKeyTextActionStyle"
+            style="@style/KbKeyTextSpecialStyle"
             android:text="←" />
     </LinearLayout>
 
@@ -22,7 +22,7 @@
         android:id="@+id/key_right"
         style="@style/KbKeyContainerStyle">
         <TextView
-            style="@style/KbKeyTextActionStyle"
+            style="@style/KbKeyTextSpecialStyle"
             android:text="→" />
     </LinearLayout>
 

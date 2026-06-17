@@ -56,6 +56,17 @@
         android:id="@+id/btn_select_keyboard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Pilih Keyboard" />
+        android:text="Pilih Keyboard"
+        android:layout_marginBottom="32dp" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Coba ketik di sini..."
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:gravity="top|start"
+        android:background="#1A000000"
+        android:padding="16dp" />
 
 </LinearLayout>

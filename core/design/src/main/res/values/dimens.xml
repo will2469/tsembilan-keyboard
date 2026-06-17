@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="kb_outer_padding">8dp</dimen>
-    <dimen name="kb_key_gap">6dp</dimen>
-    <dimen name="kb_top_bar_height">58dp</dimen>
-    <dimen name="kb_main_key_height">76dp</dimen>
-    <dimen name="kb_key_radius">16dp</dimen>
+    <dimen name="kb_outer_padding">8sp</dimen>
+    <dimen name="kb_key_gap">6sp</dimen>
+    <dimen name="kb_top_bar_height">58sp</dimen>
+    <dimen name="kb_main_key_height">76sp</dimen>
+    <dimen name="kb_key_radius">16sp</dimen>
 
     <dimen name="kb_text_main_number">30sp</dimen>
     <dimen name="kb_text_main_letters">15sp</dimen>

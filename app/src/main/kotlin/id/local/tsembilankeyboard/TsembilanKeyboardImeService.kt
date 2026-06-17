@@ -36,11 +36,13 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         },
         hidePreviewCallback = {
             hidePreview()
+            updateKeyboardLabelsForMode(multiTapEngine.currentMode)
         }
     )
 
     override fun onCreateInputView(): View {
         keyboardView = KetikKeyboardFactory.createKeyboardView(this, this)
+        updateKeyboardLabelsForMode(multiTapEngine.currentMode)
         return keyboardView
     }
 
@@ -129,17 +131,13 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         }
     }
 
-    override fun onSpaceLongClick() {
+    override fun onSpaceLongClick(anchor: View?) {
         multiTapEngine.commitCurrent()
-        if (InputTypeResolver.supportsMultiline(currentInputEditorInfo)) {
-            currentInputConnection?.commitText("\n", 1)
-        } else {
-            if (InputTypeResolver.isNumeric(currentInputEditorInfo)) {
-                currentInputConnection?.commitText("0", 1)
-            } else {
-                currentInputConnection?.commitText(" ", 1)
-            }
-        }
+        currentInputConnection?.commitText("0", 1)
+        
+        // Show preview for 300ms
+        showPreview("0", anchor)
+        keyboardView.postDelayed({ hidePreview() }, 300)
     }
 
     override fun onDeleteClick() {
@@ -184,7 +182,13 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
     override fun onAbcClick() {
         multiTapEngine.commitCurrent()
         val newMode = multiTapEngine.cycleMode()
-        KetikKeyboardFactory.updateAbcButtonLabel(keyboardView, modeToString(newMode))
+        updateKeyboardLabelsForMode(newMode)
+    }
+
+    private fun updateKeyboardLabelsForMode(mode: id.local.tsembilankeyboard.core.ime.InputMode) {
+        KetikKeyboardFactory.updateAbcButtonLabel(keyboardView, modeToString(mode))
+        val isUpperCase = mode == id.local.tsembilankeyboard.core.ime.InputMode.UPPERCASE || mode == id.local.tsembilankeyboard.core.ime.InputMode.CAPITALIZE
+        KetikKeyboardFactory.updateLetterKeysCase(keyboardView, isUpperCase)
     }
 
     private fun modeToString(mode: id.local.tsembilankeyboard.core.ime.InputMode): String {
@@ -208,7 +212,7 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         } else {
             multiTapEngine.setMode(id.local.tsembilankeyboard.core.ime.InputMode.LOWERCASE)
         }
-        KetikKeyboardFactory.updateAbcButtonLabel(keyboardView, modeToString(multiTapEngine.currentMode))
+        updateKeyboardLabelsForMode(multiTapEngine.currentMode)
     }
 
     override fun onUpdateSelection(

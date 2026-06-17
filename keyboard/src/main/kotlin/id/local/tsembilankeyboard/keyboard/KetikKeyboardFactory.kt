@@ -12,7 +12,7 @@ interface KeyboardListener {
     fun onNumberKeyClick(number: Int, anchor: View?)
     fun onNumberKeyLongClick(number: Int, anchor: View?)
     fun onSpaceClick() // 0 button single tap
-    fun onSpaceLongClick() // 0 button long tap
+    fun onSpaceLongClick(anchor: View?) // 0 button long tap
     fun onDeleteClick()
     fun onSendClick()
     fun onStarClick(anchor: View?)
@@ -58,7 +58,7 @@ object KetikKeyboardFactory {
         }
         key0?.setOnLongClickListener {
             it.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
-            listener.onSpaceLongClick()
+            listener.onSpaceLongClick(key0)
             true
         }
         
@@ -144,6 +144,19 @@ object KetikKeyboardFactory {
                 if (child is TextView) {
                     child.text = label
                     break
+                }
+            }
+        }
+    }
+
+    fun updateLetterKeysCase(view: View, isUpperCase: Boolean) {
+        val keys = listOf(R.id.key_2, R.id.key_3, R.id.key_4, R.id.key_5, R.id.key_6, R.id.key_7, R.id.key_8, R.id.key_9)
+        for (id in keys) {
+            val keyContainer = view.findViewById<View>(id)
+            if (keyContainer is android.view.ViewGroup && keyContainer.childCount > 1) {
+                val child = keyContainer.getChildAt(1)
+                if (child is TextView) {
+                    child.text = if (isUpperCase) child.text.toString().uppercase() else child.text.toString().lowercase()
                 }
             }
         }

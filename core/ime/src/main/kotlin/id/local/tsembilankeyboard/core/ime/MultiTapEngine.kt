@@ -94,6 +94,12 @@ class MultiTapEngine(
         handler.removeCallbacks(timeoutRunnable)
         if (isComposing) {
             val activeChar = getActiveChar()
+            
+            // Auto switch Abc to abc after commit
+            if (currentMode == InputMode.CAPITALIZE) {
+                currentMode = InputMode.LOWERCASE
+            }
+
             if (activeChar.isNotEmpty()) {
                 commitCallback(activeChar)
             }
@@ -101,11 +107,6 @@ class MultiTapEngine(
             currentKey = -1
             currentIndex = 0
             hidePreviewCallback()
-            
-            // Auto switch Abc to abc after commit
-            if (currentMode == InputMode.CAPITALIZE) {
-                currentMode = InputMode.LOWERCASE
-            }
         }
     }
     

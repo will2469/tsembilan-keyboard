@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="kb_outer_padding">4sp</dimen>
+    <dimen name="kb_key_gap">4sp</dimen>
+    <dimen name="kb_top_bar_height">36sp</dimen>
+    <dimen name="kb_main_key_height">44sp</dimen>
+    <dimen name="kb_key_radius">12sp</dimen>
+
+    <dimen name="kb_text_main_number">20sp</dimen>
+    <dimen name="kb_text_main_letters">12sp</dimen>
+    <dimen name="kb_text_action">16sp</dimen>
+</resources>
