@@ -14,8 +14,11 @@
     <color name="key_delete_normal">#F44336</color>
     <color name="key_delete_pressed">#D32F2F</color>
     <color name="key_delete_text">#FFFFFF</color>
-    
+
     <color name="key_special_normal">#B0BEC5</color>
     <color name="key_special_pressed">#90A4AE</color>
     <color name="key_special_text">#1E2022</color>
+
+    <color name="preview_inactive">#B0BEC5</color>
+    <color name="preview_active">#263238</color>
 </resources>

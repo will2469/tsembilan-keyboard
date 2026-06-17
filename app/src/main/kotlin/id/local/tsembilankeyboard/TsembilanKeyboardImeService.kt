@@ -1,6 +1,9 @@
 package id.local.tsembilankeyboard
 
 import android.inputmethodservice.InputMethodService
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
+import android.text.style.RelativeSizeSpan
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.View
@@ -8,20 +11,22 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import id.local.tsembilankeyboard.core.ime.ImeActionResolver
 import id.local.tsembilankeyboard.core.ime.InputTypeResolver
 import id.local.tsembilankeyboard.core.ime.MultiTapEngine
+import id.local.tsembilankeyboard.core.ime.PreviewData
 import id.local.tsembilankeyboard.keyboard.KetikKeyboardFactory
 import id.local.tsembilankeyboard.keyboard.KeyboardListener
 
 class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
 
     private lateinit var keyboardView: View
-    
+
     private var previewPopup: PopupWindow? = null
     private var previewTextView: TextView? = null
     private var currentAnchor: View? = null
-    
+
     private val multiTapEngine: MultiTapEngine = MultiTapEngine(
         commitCallback = { text ->
             currentInputConnection?.commitText(text, 1)
@@ -31,8 +36,8 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         composingCallback = { text ->
             currentInputConnection?.setComposingText(text, 1)
         },
-        previewCallback = { text ->
-            showPreview(text, currentAnchor)
+        previewCallback = { previewData ->
+            showPreview(previewData, currentAnchor)
         },
         hidePreviewCallback = {
             hidePreview()
@@ -48,9 +53,9 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
-        
+
         multiTapEngine.cancelComposing()
-        
+
         val actionLabel = ImeActionResolver.getActionLabel(info)
         KetikKeyboardFactory.updateSendButtonLabel(keyboardView, actionLabel)
         updateAutoCapitalization()
@@ -72,6 +77,36 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
     private fun showPreview(text: String, anchor: View?) {
         if (anchor == null) return
         if (InputTypeResolver.isPassword(currentInputEditorInfo)) return
+        showPreviewInternal(text, anchor)
+    }
+
+    private fun showPreview(previewData: PreviewData, anchor: View?) {
+        if (anchor == null) return
+        if (InputTypeResolver.isPassword(currentInputEditorInfo)) return
+
+        val spannable = SpannableStringBuilder(previewData.text)
+        val activeColor = ContextCompat.getColor(this, id.local.tsembilankeyboard.core.design.R.color.preview_active)
+        spannable.setSpan(
+            ForegroundColorSpan(activeColor),
+            previewData.activeStart,
+            previewData.activeEnd,
+            android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannable.setSpan(
+            RelativeSizeSpan(ACTIVE_CHAR_SCALE),
+            previewData.activeStart,
+            previewData.activeEnd,
+            android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        showPreviewInternal(spannable, anchor)
+    }
+
+    private companion object {
+        const val ACTIVE_CHAR_SCALE = 1.4f
+    }
+
+    private fun showPreviewInternal(text: CharSequence, anchor: View?) {
+        if (anchor == null) return
 
         if (previewPopup == null) {
             val popupView = layoutInflater.inflate(id.local.tsembilankeyboard.keyboard.R.layout.preview_popup, null)
@@ -79,24 +114,25 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
             previewPopup = PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             previewPopup?.isTouchable = false
         }
-        
+
         previewTextView?.text = text
+        val plainText = text.toString()
         when {
-            text.length > 20 -> previewTextView?.textSize = 14f
-            text.length > 10 -> previewTextView?.textSize = 18f
+            plainText.length > 20 -> previewTextView?.textSize = 14f
+            plainText.length > 10 -> previewTextView?.textSize = 18f
             else -> previewTextView?.textSize = 24f
         }
-        
+
         val location = IntArray(2)
         anchor.getLocationInWindow(location)
-        
+
         previewPopup?.contentView?.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
         val popupWidth = previewPopup?.contentView?.measuredWidth ?: 0
         val popupHeight = previewPopup?.contentView?.measuredHeight ?: 0
-        
+
         val x = location[0] + (anchor.width - popupWidth) / 2
         val y = location[1] - popupHeight
-        
+
         if (previewPopup?.isShowing == true) {
             previewPopup?.update(x, y, -1, -1)
         } else {
@@ -121,7 +157,7 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
     override fun onNumberKeyLongClick(number: Int, anchor: View?) {
         multiTapEngine.commitCurrent()
         currentInputConnection?.commitText(number.toString(), 1)
-        
+
         // Show preview for 300ms
         showPreview(number.toString(), anchor)
         keyboardView.postDelayed({ hidePreview() }, 300)
@@ -139,7 +175,7 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
     override fun onSpaceLongClick(anchor: View?) {
         multiTapEngine.commitCurrent()
         currentInputConnection?.commitText("0", 1)
-        
+
         // Show preview for 300ms
         showPreview("0", anchor)
         keyboardView.postDelayed({ hidePreview() }, 300)
@@ -164,7 +200,7 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         multiTapEngine.commitCurrent()
         val ic = currentInputConnection ?: return
         val editorInfo = currentInputEditorInfo ?: return
-        
+
         val action = editorInfo.imeOptions and EditorInfo.IME_MASK_ACTION
         if (action == EditorInfo.IME_ACTION_NONE || action == EditorInfo.IME_ACTION_UNSPECIFIED) {
             ic.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER))
@@ -207,7 +243,7 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
     private fun updateAutoCapitalization() {
         val ic = currentInputConnection ?: return
         val info = currentInputEditorInfo ?: return
-        
+
         if (multiTapEngine.currentMode == id.local.tsembilankeyboard.core.ime.InputMode.UPPERCASE) return
         if (InputTypeResolver.isNumeric(info) || InputTypeResolver.isPassword(info)) return
 

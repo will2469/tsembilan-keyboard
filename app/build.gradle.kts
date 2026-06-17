@@ -58,6 +58,7 @@ dependencies {
     implementation(project(":keyboard"))
     implementation(project(":core:ime"))
     implementation(project(":core:common"))
+    implementation(project(":core:design"))
     implementation(libs.androidx.core.ktx)
 }
 

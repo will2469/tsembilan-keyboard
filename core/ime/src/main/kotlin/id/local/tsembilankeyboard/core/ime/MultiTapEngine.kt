@@ -9,10 +9,16 @@ enum class InputMode {
     UPPERCASE  // ABC
 }
 
+data class PreviewData(
+    val text: String,
+    val activeStart: Int,
+    val activeEnd: Int
+)
+
 class MultiTapEngine(
     private val commitCallback: (String) -> Unit,
     private val composingCallback: (String) -> Unit,
-    private val previewCallback: (String) -> Unit,
+    private val previewCallback: (PreviewData) -> Unit,
     private val hidePreviewCallback: () -> Unit
 ) {
     companion object {
@@ -20,14 +26,14 @@ class MultiTapEngine(
     }
 
     private val handler = Handler(Looper.getMainLooper())
-    
+
     private var currentKey: Int = -1
     private var currentIndex: Int = 0
     private var isComposing: Boolean = false
-    
+
     var currentMode: InputMode = InputMode.LOWERCASE
         private set
-        
+
     fun setMode(mode: InputMode) {
         currentMode = mode
     }
@@ -81,15 +87,31 @@ class MultiTapEngine(
         }
     }
 
-    private fun getPreviewText(): String {
-        val chars = KeyMapper.getCharacters(currentKey) ?: return getActiveChar()
-        return chars.mapIndexed { index, s ->
+    private fun getPreviewData(): PreviewData {
+        val chars = KeyMapper.getCharacters(currentKey)
+        if (chars == null) {
+            val active = getActiveChar()
+            return PreviewData(active, 0, active.length)
+        }
+        val separator = "  "
+        val builder = StringBuilder()
+        var activeStart = 0
+        var activeEnd = 0
+        chars.forEachIndexed { index, s ->
             val charToDisplay = when (currentMode) {
                 InputMode.LOWERCASE -> s.lowercase()
                 InputMode.CAPITALIZE, InputMode.UPPERCASE -> s.uppercase()
             }
-            if (index == currentIndex) "[$charToDisplay]" else charToDisplay
-        }.joinToString("  ")
+            if (index > 0) builder.append(separator)
+            if (index == currentIndex) {
+                activeStart = builder.length
+                builder.append(charToDisplay)
+                activeEnd = builder.length
+            } else {
+                builder.append(charToDisplay)
+            }
+        }
+        return PreviewData(builder.toString(), activeStart, activeEnd)
     }
 
     private fun updateComposingAndPreview() {
@@ -97,7 +119,7 @@ class MultiTapEngine(
         val activeChar = getActiveChar()
         if (activeChar.isNotEmpty()) {
             composingCallback(activeChar)
-            previewCallback(getPreviewText())
+            previewCallback(getPreviewData())
         }
     }
 
@@ -105,7 +127,7 @@ class MultiTapEngine(
         handler.removeCallbacks(timeoutRunnable)
         if (isComposing) {
             val activeChar = getActiveChar()
-            
+
             // Auto switch Abc to abc after commit
             if (currentMode == InputMode.CAPITALIZE) {
                 currentMode = InputMode.LOWERCASE
@@ -120,7 +142,7 @@ class MultiTapEngine(
             hidePreviewCallback()
         }
     }
-    
+
     fun cancelComposing() {
         handler.removeCallbacks(timeoutRunnable)
         isComposing = false
@@ -137,6 +159,6 @@ class MultiTapEngine(
         handler.removeCallbacks(timeoutRunnable)
         handler.postDelayed(timeoutRunnable, MULTI_TAP_TIMEOUT_MS)
     }
-    
+
     fun isComposing(): Boolean = isComposing
 }
