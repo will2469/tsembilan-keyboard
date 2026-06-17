@@ -1,0 +1,5 @@
+Tsembilan Keyboard tidak menggunakan koneksi internet.
+Tsembilan Keyboard tidak mengumpulkan, menyimpan, menjual, atau mengirim teks yang diketik.
+Semua input diproses lokal di perangkat.
+Aplikasi tidak menggunakan analytics, iklan, atau layanan pihak ketiga.
+Aplikasi tidak membaca SMS, kontak, lokasi, notifikasi, atau clipboard.

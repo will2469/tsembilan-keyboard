@@ -1,0 +1,34 @@
+# ==============================================================================
+# PANDUAN PENGISIAN KEGIATAN SIGNING (PENANDATANGANAN) APK RILIS
+# ==============================================================================
+#
+# Langkah 1: Buat Keystore Baru (Hanya jika Anda belum memilikinya)
+# Jalankan perintah ini di terminal komputer Anda untuk membuat file .jks baru:
+# keytool -genkey -v -keystore tsembilan-release.jks -keyalg RSA -keysize 2048 -validity 10000 -alias tsembilan
+# (Saat ditanya password, masukkan sandi yang kuat dan ingat-ingat sandinya).
+#
+# Langkah 2: Copy file ini
+# Copy (gandakan) file "signing.properties.example" ini dan ubah namanya
+# menjadi "signing.properties" di folder yang sama (folder root project).
+# File "signing.properties" otomatis DIABAIKAN oleh Git (berkat .gitignore), 
+# sehingga rahasia Anda tidak akan pernah bocor ke GitHub.
+#
+# Langkah 3: Isi Nilai-nilainya (di dalam file signing.properties yang baru)
+# Ganti tulisan CHANGE_ME dan /path/to/ di bawah sesuai dengan data keystore Anda.
+# ==============================================================================
+
+# Lokasi fisik tempat file .jks Anda tersimpan. 
+# Jika file .jks ditaruh di folder root project (satu folder dengan file ini),
+# Anda cukup menuliskan nama filenya saja, contoh: storeFile=tsembilan-release.jks
+# Jika ditaruh di tempat lain, gunakan absolut path (contoh: /home/will/Documents/tsembilan-release.jks)
+storeFile=/path/to/tsembilan-release.jks
+
+# Password dari keystore (.jks) yang Anda buat pada Langkah 1
+storePassword=CHANGE_ME
+
+# Nama alias dari kunci yang ada di dalam keystore. 
+# Jika mengikuti perintah di Langkah 1, alias-nya adalah "tsembilan"
+keyAlias=tsembilan
+
+# Password khusus untuk alias kunci tersebut (biasanya sama dengan storePassword)
+keyPassword=CHANGE_ME
