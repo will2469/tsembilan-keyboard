@@ -7,11 +7,11 @@ object ImeActionResolver {
         if (editorInfo == null) return "KIRIM"
         
         return when (editorInfo.imeOptions and EditorInfo.IME_MASK_ACTION) {
-            EditorInfo.IME_ACTION_GO -> "GO"
-            EditorInfo.IME_ACTION_NEXT -> "NEXT"
+            EditorInfo.IME_ACTION_GO -> "PERGI"
+            EditorInfo.IME_ACTION_NEXT -> "LANJUT"
             EditorInfo.IME_ACTION_SEARCH -> "CARI"
             EditorInfo.IME_ACTION_SEND -> "KIRIM"
-            EditorInfo.IME_ACTION_DONE -> "DONE"
+            EditorInfo.IME_ACTION_DONE -> "TUTUP"
             else -> "KIRIM"
         }
     }

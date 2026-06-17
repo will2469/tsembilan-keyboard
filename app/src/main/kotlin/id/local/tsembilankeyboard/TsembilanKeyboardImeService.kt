@@ -51,7 +51,7 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         
         val actionLabel = ImeActionResolver.getActionLabel(info)
         KetikKeyboardFactory.updateSendButtonLabel(keyboardView, actionLabel)
-        KetikKeyboardFactory.updateAbcButtonLabel(keyboardView, modeToString(multiTapEngine.currentMode))
+        updateAutoCapitalization()
     }
 
     override fun onFinishInputView(finishingInput: Boolean) {
@@ -111,6 +111,15 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         }
     }
 
+    override fun onNumberKeyLongClick(number: Int, anchor: View?) {
+        multiTapEngine.commitCurrent()
+        currentInputConnection?.commitText(number.toString(), 1)
+        
+        // Show preview for 300ms
+        showPreview(number.toString(), anchor)
+        keyboardView.postDelayed({ hidePreview() }, 300)
+    }
+
     override fun onSpaceClick() {
         multiTapEngine.commitCurrent()
         if (InputTypeResolver.isNumeric(currentInputEditorInfo)) {
@@ -162,9 +171,14 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         }
     }
 
-    override fun onStarClick() {
-        multiTapEngine.commitCurrent()
-        currentInputConnection?.commitText("*", 1)
+    override fun onStarClick(anchor: View?) {
+        currentAnchor = anchor
+        if (InputTypeResolver.isNumeric(currentInputEditorInfo)) {
+            multiTapEngine.commitCurrent()
+            currentInputConnection?.commitText("*", 1)
+        } else {
+            multiTapEngine.onKeyPress(10)
+        }
     }
 
     override fun onAbcClick() {
@@ -181,15 +195,48 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         }
     }
 
+    private fun updateAutoCapitalization() {
+        val ic = currentInputConnection ?: return
+        val info = currentInputEditorInfo ?: return
+        
+        if (multiTapEngine.currentMode == id.local.tsembilankeyboard.core.ime.InputMode.UPPERCASE) return
+        if (InputTypeResolver.isNumeric(info) || InputTypeResolver.isPassword(info)) return
+
+        val capsMode = ic.getCursorCapsMode(info.inputType)
+        if (capsMode != 0) {
+            multiTapEngine.setMode(id.local.tsembilankeyboard.core.ime.InputMode.CAPITALIZE)
+        } else {
+            multiTapEngine.setMode(id.local.tsembilankeyboard.core.ime.InputMode.LOWERCASE)
+        }
+        KetikKeyboardFactory.updateAbcButtonLabel(keyboardView, modeToString(multiTapEngine.currentMode))
+    }
+
+    override fun onUpdateSelection(
+        oldSelStart: Int, oldSelEnd: Int,
+        newSelStart: Int, newSelEnd: Int,
+        candidatesStart: Int, candidatesEnd: Int
+    ) {
+        super.onUpdateSelection(oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd)
+        if (!multiTapEngine.isComposing()) {
+            updateAutoCapitalization()
+        }
+    }
+
     override fun onLeftClick() {
         multiTapEngine.commitCurrent()
-        currentInputConnection?.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT))
-        currentInputConnection?.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_LEFT))
+        val textBefore = currentInputConnection?.getTextBeforeCursor(1, 0)
+        if (!textBefore.isNullOrEmpty()) {
+            currentInputConnection?.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_LEFT))
+            currentInputConnection?.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_LEFT))
+        }
     }
 
     override fun onRightClick() {
         multiTapEngine.commitCurrent()
-        currentInputConnection?.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT))
-        currentInputConnection?.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_RIGHT))
+        val textAfter = currentInputConnection?.getTextAfterCursor(1, 0)
+        if (!textAfter.isNullOrEmpty()) {
+            currentInputConnection?.sendKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_RIGHT))
+            currentInputConnection?.sendKeyEvent(KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_RIGHT))
+        }
     }
 }

@@ -10,11 +10,12 @@ import android.widget.TextView
 
 interface KeyboardListener {
     fun onNumberKeyClick(number: Int, anchor: View?)
+    fun onNumberKeyLongClick(number: Int, anchor: View?)
     fun onSpaceClick() // 0 button single tap
     fun onSpaceLongClick() // 0 button long tap
     fun onDeleteClick()
     fun onSendClick()
-    fun onStarClick()
+    fun onStarClick(anchor: View?)
     fun onAbcClick()
     fun onLeftClick()
     fun onRightClick()
@@ -40,15 +41,23 @@ object KetikKeyboardFactory {
         for ((id, number) in numberKeys) {
             val keyView = view.findViewById<View>(id)
             keyView?.setOnClickListener {
+                it.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
                 listener.onNumberKeyClick(number, keyView)
+            }
+            keyView?.setOnLongClickListener {
+                it.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
+                listener.onNumberKeyLongClick(number, keyView)
+                true
             }
         }
         
         val key0 = view.findViewById<View>(R.id.key_0)
         key0?.setOnClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
             listener.onSpaceClick() // Handled via space click in IME
         }
         key0?.setOnLongClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.LONG_PRESS)
             listener.onSpaceLongClick()
             true
         }
@@ -60,22 +69,28 @@ object KetikKeyboardFactory {
         }
         
         view.findViewById<View>(R.id.key_send)?.setOnClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
             listener.onSendClick()
         }
         
-        view.findViewById<View>(R.id.key_star)?.setOnClickListener {
-            listener.onStarClick()
+        val keyStar = view.findViewById<View>(R.id.key_star)
+        keyStar?.setOnClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
+            listener.onStarClick(keyStar)
         }
         
         view.findViewById<View>(R.id.key_abc)?.setOnClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
             listener.onAbcClick()
         }
         
         view.findViewById<View>(R.id.key_left)?.setOnClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
             listener.onLeftClick()
         }
 
         view.findViewById<View>(R.id.key_right)?.setOnClickListener {
+            it.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
             listener.onRightClick()
         }
         
@@ -99,6 +114,7 @@ object KetikKeyboardFactory {
         view.setOnTouchListener { v, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    v.performHapticFeedback(android.view.HapticFeedbackConstants.KEYBOARD_TAP)
                     isPressed = true
                     v.isPressed = true
                     action()

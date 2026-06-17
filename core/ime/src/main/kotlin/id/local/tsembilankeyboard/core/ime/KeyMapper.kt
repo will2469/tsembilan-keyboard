@@ -10,7 +10,8 @@ object KeyMapper {
         6 to listOf("m", "n", "o"),
         7 to listOf("p", "q", "r", "s"),
         8 to listOf("t", "u", "v"),
-        9 to listOf("w", "x", "y", "z")
+        9 to listOf("w", "x", "y", "z"),
+        10 to listOf("*", "@", "/", "\"", "'", "#", "-", "_")
     )
 
     fun getCharacters(number: Int): List<String>? {

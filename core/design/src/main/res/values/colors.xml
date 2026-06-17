@@ -11,9 +11,9 @@
     <color name="key_send_pressed">#075E54</color>
     <color name="key_send_text">#FFFFFF</color>
 
-    <color name="key_delete_normal">#B0BEC5</color>
-    <color name="key_delete_pressed">#90A4AE</color>
-    <color name="key_delete_text">#1E2022</color>
+    <color name="key_delete_normal">#F44336</color>
+    <color name="key_delete_pressed">#D32F2F</color>
+    <color name="key_delete_text">#FFFFFF</color>
     
     <color name="key_special_normal">#B0BEC5</color>
     <color name="key_special_pressed">#90A4AE</color>
