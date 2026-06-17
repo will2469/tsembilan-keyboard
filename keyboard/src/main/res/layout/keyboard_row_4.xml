@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/KbRowStyle"
+    android:layout_marginBottom="0dp">
+    
+    <LinearLayout
+        android:id="@+id/key_star"
+        style="@style/KbKeyContainerStyle">
+        <TextView
+            style="@style/KbKeyTextMainStyle"
+            android:text="*" />
+        <TextView
+            style="@style/KbKeyTextLettersStyle"
+            android:text="SIMBOL" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/key_0"
+        style="@style/KbKeyContainerStyle">
+        <TextView
+            style="@style/KbKeyTextMainStyle"
+            android:text="0" />
+        <TextView
+            style="@style/KbKeyTextLettersStyle"
+            android:text="SPASI" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/key_send"
+        style="@style/KbKeyContainerStyle.Send"
+        android:layout_marginEnd="0dp">
+        <TextView
+            android:id="@+id/text_send"
+            style="@style/KbKeyTextSendStyle"
+            android:text="KIRIM" />
+    </LinearLayout>
+</LinearLayout>

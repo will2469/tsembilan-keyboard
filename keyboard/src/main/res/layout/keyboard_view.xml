@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/keyboard_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/kb_background"
+    android:padding="@dimen/kb_outer_padding">
+    
+    <include layout="@layout/keyboard_row_top" />
+    <include layout="@layout/keyboard_row_1" />
+    <include layout="@layout/keyboard_row_2" />
+    <include layout="@layout/keyboard_row_3" />
+    <include layout="@layout/keyboard_row_4" />
+    
+</LinearLayout>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Mode Colors -->
+    <color name="kb_background">#111214</color>
+    <color name="key_background_normal">#25272A</color>
+    <color name="key_background_pressed">#3A3D42</color>
+    <color name="key_text_main">#E8EAED</color>
+    <color name="key_text_secondary">#9AA0A6</color>
+
+    <color name="key_send_normal">#00A884</color>
+    <color name="key_send_pressed">#008069</color>
+    <color name="key_send_text">#FFFFFF</color>
+
+    <color name="key_delete_normal">#3C4043</color>
+    <color name="key_delete_pressed">#5F6368</color>
+    <color name="key_delete_text">#E8EAED</color>
+    
+    <color name="key_special_normal">#3C4043</color>
+    <color name="key_special_pressed">#5F6368</color>
+    <color name="key_special_text">#E8EAED</color>
+</resources>

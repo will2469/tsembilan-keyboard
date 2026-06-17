@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/KbRowStyle">
+    
+    <LinearLayout
+        android:id="@+id/key_4"
+        style="@style/KbKeyContainerStyle">
+        <TextView
+            style="@style/KbKeyTextMainStyle"
+            android:text="4" />
+        <TextView
+            style="@style/KbKeyTextLettersStyle"
+            android:text="GHI" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/key_5"
+        style="@style/KbKeyContainerStyle">
+        <TextView
+            style="@style/KbKeyTextMainStyle"
+            android:text="5" />
+        <TextView
+            style="@style/KbKeyTextLettersStyle"
+            android:text="JKL" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/key_6"
+        style="@style/KbKeyContainerStyle.Last">
+        <TextView
+            style="@style/KbKeyTextMainStyle"
+            android:text="6" />
+        <TextView
+            style="@style/KbKeyTextLettersStyle"
+            android:text="MNO" />
+    </LinearLayout>
+</LinearLayout>
