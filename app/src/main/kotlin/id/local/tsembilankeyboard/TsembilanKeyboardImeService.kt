@@ -81,6 +81,11 @@ class TsembilanKeyboardImeService : InputMethodService(), KeyboardListener {
         }
         
         previewTextView?.text = text
+        when {
+            text.length > 20 -> previewTextView?.textSize = 14f
+            text.length > 10 -> previewTextView?.textSize = 18f
+            else -> previewTextView?.textSize = 24f
+        }
         
         val location = IntArray(2)
         anchor.getLocationInWindow(location)

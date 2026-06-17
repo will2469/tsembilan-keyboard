@@ -81,12 +81,23 @@ class MultiTapEngine(
         }
     }
 
+    private fun getPreviewText(): String {
+        val chars = KeyMapper.getCharacters(currentKey) ?: return getActiveChar()
+        return chars.mapIndexed { index, s ->
+            val charToDisplay = when (currentMode) {
+                InputMode.LOWERCASE -> s.lowercase()
+                InputMode.CAPITALIZE, InputMode.UPPERCASE -> s.uppercase()
+            }
+            if (index == currentIndex) "[$charToDisplay]" else charToDisplay
+        }.joinToString("  ")
+    }
+
     private fun updateComposingAndPreview() {
         if (!isComposing) return
         val activeChar = getActiveChar()
         if (activeChar.isNotEmpty()) {
             composingCallback(activeChar)
-            previewCallback(activeChar)
+            previewCallback(getPreviewText())
         }
     }
 

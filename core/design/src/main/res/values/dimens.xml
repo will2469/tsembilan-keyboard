@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="kb_outer_padding">8sp</dimen>
-    <dimen name="kb_key_gap">6sp</dimen>
-    <dimen name="kb_top_bar_height">58sp</dimen>
-    <dimen name="kb_main_key_height">76sp</dimen>
-    <dimen name="kb_key_radius">16sp</dimen>
+    <dimen name="kb_outer_padding">6sp</dimen>
+    <dimen name="kb_key_gap">5sp</dimen>
+    <dimen name="kb_top_bar_height">48sp</dimen>
+    <dimen name="kb_main_key_height">62sp</dimen>
+    <dimen name="kb_key_radius">14sp</dimen>
 
-    <dimen name="kb_text_main_number">30sp</dimen>
-    <dimen name="kb_text_main_letters">15sp</dimen>
-    <dimen name="kb_text_action">20sp</dimen>
+    <dimen name="kb_text_main_number">26sp</dimen>
+    <dimen name="kb_text_main_letters">13sp</dimen>
+    <dimen name="kb_text_action">18sp</dimen>
 </resources>
